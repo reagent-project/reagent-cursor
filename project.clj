@@ -1,4 +1,4 @@
-(defproject reagent-project/reagent-cursor "0.1.0-SNAPSHOT"
+(defproject reagent-project/reagent-cursor "0.1.0"
   :description "Provide Om-inspired cursors for Reagent"
   :url "http://github.com/reagent-project/reagent-cursor"
   :license {:name "Eclipse Public License"

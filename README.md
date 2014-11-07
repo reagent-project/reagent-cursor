@@ -6,7 +6,7 @@ Optional cursors library for Reagent.
 Usage
 -----
 
-Add `[reagent-project/reagent-cursor "0.1.0-SNAPSHOT"]` to `:dependencies` in `project.clj`.
+Add `[reagent-project/reagent-cursor "0.1.0"]` to `:dependencies` in `project.clj`.
 
 In your Reagent application, `(:require [reagent.cursor :as rc])` and then construct cursors from Reagent atoms like this `(rc/cursor [:path :to :data] ratom)`.
 
