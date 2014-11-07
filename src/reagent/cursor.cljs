@@ -1,4 +1,4 @@
-;; copyright (c) Sean Corfield
+;; copyright (c) 2014 Sean Corfield
 
 (ns reagent.cursor
   "Optional cursor support for Reagent.

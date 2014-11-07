@@ -1,3 +1,4 @@
+;; lifted from main reagent project and simplified a bit
 
 (ns runtests
   (:require [reagent.core :as reagent :refer [atom]]

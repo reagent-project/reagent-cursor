@@ -1,3 +1,7 @@
+;; copyright (c) 2014 Sean Corfield
+;;
+;; based directly on @holmsand tests for ratom
+
 (ns testcursor
   (:require-macros [cemerick.cljs.test
                     :refer (is deftest with-test run-tests testing)]
