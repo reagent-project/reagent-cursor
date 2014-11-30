@@ -14,9 +14,21 @@
 
 ;; Implementation based on RAtom by delegation
 
+(defprotocol IRoot
+  (-root [c]))
+
+(defprotocol IPath
+  (-path [c]))
+
 (deftype RCursor [path ratom]
   IAtom
 
+  IRoot
+  (-root [_] ratom)
+
+  IPath
+  (-path [_] path)
+  
   IEquiv
   (-equiv [o other] (identical? o other))
 
@@ -73,6 +85,28 @@
   (-hash [this] (goog/getUid this)))
 
 ;; RCursor
+
+
+(defn root
+  "Return the original atom of a cursor."
+  [cursor]
+  (-root cursor))
+
+(defn path
+  "Return the cursor's path."
+  [cursor]
+  (-path cursor))
+
+(declare cursor)
+(defn parent
+  "Return a cursor one level higher in the path, or the root atom
+  itself. Should probably only be used as a debugging tool only to
+  keep cursor code architecture-agnostic." [c]
+  (cond
+   (instance? Atom c) c
+   (not (next (path c))) (root c)
+   :else (cursor (drop-last (path c)) (root c))))
+
 
 (defn cursor
   "Provide a cursor into a Reagent atom.
