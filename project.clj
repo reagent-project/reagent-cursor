@@ -1,9 +1,9 @@
-(defproject reagent/reagent-cursor "0.1.0"
+(defproject reagent/reagent-cursor "0.1.1"
   :description "Provide Om-inspired cursors for Reagent"
   :url "http://github.com/reagent-project/reagent-cursor"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.7.0-alpha3"]
+  :dependencies [[org.clojure/clojure "1.7.0-alpha4"]
                  [org.clojure/clojurescript "0.0-2356"]
                  [reagent "0.4.3"]]
   :plugins [[lein-cljsbuild "1.0.3"]
