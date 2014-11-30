@@ -36,7 +36,8 @@
   (-swap! [a f x y]
     (swap! ratom update-in path f x y))
   (-swap! [a f x y more]
-    (swap! ratom update-in path f x y more))
+    (swap! ratom update-in path
+           (fn [v] (apply f v x y more))))
 
   IMeta
   (-meta [_]
