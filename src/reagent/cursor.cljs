@@ -5,7 +5,7 @@
 
   (:require [reagent.cursor :as rc])
 
-  (rc/cursor [:path :to :some :item] some-ratom)
+  (rc/cursor some-ratom [:path :to :some :item])
 
   The cursor behaves in all ways like a regular Reagent atom except
   that it dereferences to the specified path inside the atom
@@ -14,9 +14,21 @@
 
 ;; Implementation based on RAtom by delegation
 
-(deftype RCursor [path ratom]
+(defprotocol IRoot
+  (-root [c]))
+
+(defprotocol IPath
+  (-path [c]))
+
+(deftype RCursor [ratom path]
   IAtom
 
+  IRoot
+  (-root [_] ratom)
+
+  IPath
+  (-path [_] path)
+  
   IEquiv
   (-equiv [o other] (identical? o other))
 
@@ -30,14 +42,18 @@
 
   ISwap
   (-swap! [a f]
-    (swap! ratom update-in path f))
+    (-> (swap! ratom update-in path f)
+        (get-in path)))
   (-swap! [a f x]
-    (swap! ratom update-in path f x))
+    (-> (swap! ratom update-in path f x)
+        (get-in path)))
   (-swap! [a f x y]
-    (swap! ratom update-in path f x y))
+    (-> (swap! ratom update-in path f x y)
+        (get-in path)))
   (-swap! [a f x y more]
-    (swap! ratom update-in path
-           (fn [v] (apply f v x y more))))
+    (-> (swap! ratom update-in path
+               (fn [v] (apply f v x y more)))
+        (get-in path)))
 
   IMeta
   (-meta [_]
@@ -49,10 +65,12 @@
     ;; should it print as an atom focused on the appropriate part of
     ;; the ratom - (pr-writer (get-in @ratom path)) - or should it be
     ;; a completely separate type? and do we need a reader for it?
+
+    ;; Until further investigation, it should simply be REPL friendly.
     (-write writer "#<Cursor: ")
+    (pr-writer (get-in @ratom path) writer opts) ;; the current value
+    (-write writer " @")
     (pr-writer path writer opts)
-    (-write writer " ")
-    (pr-writer ratom writer opts)
     (-write writer ">"))
 
   IWatchable
@@ -68,15 +86,36 @@
 
 ;; RCursor
 
-(defn cursor
-  "Provide a cursor into a Reagent atom.
 
-Behaves like a Reagent atom but focuses updates and derefs to
-the specified path within the wrapped Reagent atom. e.g.,
+(defn root
+  "Return the original atom of a cursor."
+  [c]
+  (-root c))
+
+(defn path
+  "Return the cursor's path."
+  [c]
+  (-path c))
+
+(declare cursor)
+(defn parent
+  "Return a cursor one level higher in the path, or the root atom
+  itself. Should probably be used as a debugging tool only to keep
+  cursor code architecture-agnostic." [c]
+  (cond
+   (instance? Atom c) c
+   (not (next (path c))) (root c)
+   :else (cursor (root c) (drop-last (path c)))))
+
+
+(defn cursor
+  "Provide a cursor into an atom.
+
+  Behaves like a normal atom but focuses updates and derefs to
+  the specified path within the wrapped atom. e.g.,
   (let [c (cursor [:nested :content] ra)]
-    ... @c ;; equivalent to (get-in @ra [:nested :content])
-    ... (reset! c 42) ;; equivalent to (swap! ra assoc-in [:nested :content] 42)
-    ... (swap! c inc) ;; equivalence to (swap! ra update-in [:nested :content] inc)
-    )"
-  ([path] (fn [ra] (cursor path ra)))
-  ([path ra] (RCursor. path ra)))
+  ... @c ;; equivalent to (get-in @ra [:nested :content])
+  ... (reset! c 42) ;; equivalent to (swap! ra assoc-in [:nested :content] 42)
+  ... (swap! c inc) ;; equivalence to (swap! ra update-in [:nested :content] inc)
+  )"
+  [ra path] (RCursor. ra path))
