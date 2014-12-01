@@ -1,14 +1,14 @@
 reagent-cursor
 ==============
 
-Optional cursors library for Reagent.
+Cursors library for clojurescript atoms.
 
 Usage
 -----
 
-Add `[reagent/reagent-cursor "0.1.1"]` to `:dependencies` in `project.clj`.
+Add `[reagent/reagent-cursor "0.2.0"]` to `:dependencies` in `project.clj`.
 
-In your Reagent application, `(:require [reagent.cursor :as rc])` and then construct cursors from Reagent atoms like this `(rc/cursor [:path :to :data] ratom)`.
+In your Reagent application, `(:require [reagent.cursor :as rc])` and then construct cursors from Reagent atoms like this `(rc/cursor ratom [:path :to :data])`.
 
 See docstrings in `reagent.cursor` for more details.
 

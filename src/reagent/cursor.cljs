@@ -5,7 +5,7 @@
 
   (:require [reagent.cursor :as rc])
 
-  (rc/cursor [:path :to :some :item] some-ratom)
+  (rc/cursor some-ratom [:path :to :some :item])
 
   The cursor behaves in all ways like a regular Reagent atom except
   that it dereferences to the specified path inside the atom
@@ -20,7 +20,7 @@
 (defprotocol IPath
   (-path [c]))
 
-(deftype RCursor [path ratom]
+(deftype RCursor [ratom path]
   IAtom
 
   IRoot
@@ -89,34 +89,33 @@
 
 (defn root
   "Return the original atom of a cursor."
-  [cursor]
-  (-root cursor))
+  [c]
+  (-root c))
 
 (defn path
   "Return the cursor's path."
-  [cursor]
-  (-path cursor))
+  [c]
+  (-path c))
 
 (declare cursor)
 (defn parent
   "Return a cursor one level higher in the path, or the root atom
-  itself. Should probably only be used as a debugging tool only to
-  keep cursor code architecture-agnostic." [c]
+  itself. Should probably be used as a debugging tool only to keep
+  cursor code architecture-agnostic." [c]
   (cond
    (instance? Atom c) c
    (not (next (path c))) (root c)
-   :else (cursor (drop-last (path c)) (root c))))
+   :else (cursor (root c) (drop-last (path c)))))
 
 
 (defn cursor
-  "Provide a cursor into a Reagent atom.
+  "Provide a cursor into an atom.
 
-Behaves like a Reagent atom but focuses updates and derefs to
-the specified path within the wrapped Reagent atom. e.g.,
+  Behaves like a normal atom but focuses updates and derefs to
+  the specified path within the wrapped atom. e.g.,
   (let [c (cursor [:nested :content] ra)]
-    ... @c ;; equivalent to (get-in @ra [:nested :content])
-    ... (reset! c 42) ;; equivalent to (swap! ra assoc-in [:nested :content] 42)
-    ... (swap! c inc) ;; equivalence to (swap! ra update-in [:nested :content] inc)
-    )"
-  ([path] (fn [ra] (cursor path ra)))
-  ([path ra] (RCursor. path ra)))
+  ... @c ;; equivalent to (get-in @ra [:nested :content])
+  ... (reset! c 42) ;; equivalent to (swap! ra assoc-in [:nested :content] 42)
+  ... (swap! c inc) ;; equivalence to (swap! ra update-in [:nested :content] inc)
+  )"
+  [ra path] (RCursor. ra path))
