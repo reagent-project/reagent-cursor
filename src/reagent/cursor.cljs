@@ -30,14 +30,18 @@
 
   ISwap
   (-swap! [a f]
-    (swap! ratom update-in path f))
+    (-> (swap! ratom update-in path f)
+        (get-in path)))
   (-swap! [a f x]
-    (swap! ratom update-in path f x))
+    (-> (swap! ratom update-in path f x)
+        (get-in path)))
   (-swap! [a f x y]
-    (swap! ratom update-in path f x y))
+    (-> (swap! ratom update-in path f x y)
+        (get-in path)))
   (-swap! [a f x y more]
-    (swap! ratom update-in path
-           (fn [v] (apply f v x y more))))
+    (-> (swap! ratom update-in path
+               (fn [v] (apply f v x y more)))
+        (get-in path)))
 
   IMeta
   (-meta [_]
