@@ -30,14 +30,18 @@
 
   ISwap
   (-swap! [a f]
-    (swap! ratom update-in path f))
+    (-> (swap! ratom update-in path f)
+        (get-in path)))
   (-swap! [a f x]
-    (swap! ratom update-in path f x))
+    (-> (swap! ratom update-in path f x)
+        (get-in path)))
   (-swap! [a f x y]
-    (swap! ratom update-in path f x y))
+    (-> (swap! ratom update-in path f x y)
+        (get-in path)))
   (-swap! [a f x y more]
-    (swap! ratom update-in path
-           (fn [v] (apply f v x y more))))
+    (-> (swap! ratom update-in path
+               (fn [v] (apply f v x y more)))
+        (get-in path)))
 
   IMeta
   (-meta [_]
@@ -49,10 +53,12 @@
     ;; should it print as an atom focused on the appropriate part of
     ;; the ratom - (pr-writer (get-in @ratom path)) - or should it be
     ;; a completely separate type? and do we need a reader for it?
+
+    ;; Until further investigation, it should simply be REPL friendly.
     (-write writer "#<Cursor: ")
+    (pr-writer (get-in @ratom path) writer opts) ;; the current value
+    (-write writer " @")
     (pr-writer path writer opts)
-    (-write writer " ")
-    (pr-writer ratom writer opts)
     (-write writer ">"))
 
   IWatchable
