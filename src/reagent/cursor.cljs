@@ -14,6 +14,7 @@
 
 ;; Implementation based on RAtom by delegation
 
+
 (deftype RCursor [path ratom]
   IAtom
 
@@ -26,7 +27,8 @@
 
   IReset
   (-reset! [a new-value]
-    (swap! ratom assoc-in path new-value))
+    (-> (swap! ratom assoc-in path new-value)
+        (get-in path)))
 
   ISwap
   (-swap! [a f]
@@ -65,9 +67,14 @@
   (-notify-watches [this oldval newval]
     (-notify-watches ratom oldval newval))
   (-add-watch [this key f]
-    (-add-watch ratom key f))
+    (-add-watch ratom [path key]
+                (fn [k r o n]
+                  (f key
+                     this
+                     (get-in o path)
+                     (get-in n path)))))
   (-remove-watch [this key]
-    (-remove-watch ratom key))
+    (-remove-watch ratom [path key]))
 
   IHash
   (-hash [this] (goog/getUid this)))
@@ -75,14 +82,25 @@
 ;; RCursor
 
 (defn cursor
-  "Provide a cursor into a Reagent atom.
+  "Provide a cursor into an atom.
+  
+  When called with a single argument, return a function that will
+  create a cursor given an atom.
 
-Behaves like a Reagent atom but focuses updates and derefs to
-the specified path within the wrapped Reagent atom. e.g.,
+  Behaves like an atom but focuses updates and derefs to the specified
+  path within the wrapped atom. e.g.,
   (let [c (cursor [:nested :content] ra)]
-    ... @c ;; equivalent to (get-in @ra [:nested :content])
-    ... (reset! c 42) ;; equivalent to (swap! ra assoc-in [:nested :content] 42)
-    ... (swap! c inc) ;; equivalence to (swap! ra update-in [:nested :content] inc)
-    )"
+  ... @c ;; equivalent to (get-in @ra [:nested :content])
+  ... (reset! c 42) ;; equivalent to (swap! ra assoc-in [:nested :content] 42)
+  ... (swap! c inc) ;; equivalence to (swap! ra update-in [:nested :content] inc)
+  )"
   ([path] (fn [ra] (cursor path ra)))
   ([path ra] (RCursor. path ra)))
+
+
+(defn cur
+  "Create a cursor. 
+
+  Behaves like a normal atom for the value at the specified path."
+  [a path]
+  (RCursor. path a))
