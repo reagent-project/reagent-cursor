@@ -1,8 +1,8 @@
 Cursors
 ==============
 
-Cursors can be seen as a kind of *pointers* to a particular part of an
-atom, which behaving exactly like a normal atom. This means that you
+Cursors can be seen as a kind of *pointer* to a particular part of an
+atom, which behaves exactly like a normal atom. This means that you
 use the same functions you would on an atom (`reset!`, `swap!`,
 `deref`, `add-watch`, etc) but affect only the part you are interested
 in.
@@ -42,7 +42,7 @@ Add `[reagent/reagent-cursor "0.1.2"]` to `:dependencies` in `project.clj`.
 
 In your Reagent application `(:require [reagent.cursor :as rc])`.
 
-There is two main functions available to create cursors: `cursor` and `cur`.
+There are two main functions available to create cursors: `cursor` and `cur`.
 
 ## cursor
 
@@ -77,7 +77,8 @@ arguments (the atom and a path), but is guaranteed to return a
 cursor.
 
 Note that the atom argument is placed on the left, allowing
-you to use a threading macro.
+you to use a thread-first macro (`cursor` requires a thread-last
+macro).
 
 ```clj
 
