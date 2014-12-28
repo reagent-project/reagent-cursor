@@ -9,22 +9,36 @@
 
 (deftest values
   (let [test-atom (atom {:a {:b {:c {:d 1}}}})
-        test-cursor (c/cur test-atom [:a :b :c :d])]
+        test-cursor (c/cur test-atom [:a :b :c :d])
+        test-cursor2 (c/cur test-atom [])] ;; nasty edge case
 
     ;; get the initial values
     (is (= (get-in @test-atom [:a :b :c :d])
            @test-cursor))
+
+    (is (= get-in @test-atom []
+           @test-cursor2))
     
     ;; now we update the cursor with a reset    
     (reset! test-cursor 2)
     (is (= @test-cursor 2))
     (is (= (get-in @test-atom [:a :b :c :d]) 2))
 
+    (reset! test-cursor2 2)
+    (is (= @test-cursor2 2))
+    (is (= (get-in @test-atom []) 2))
+
     ;; swap
     (reset! test-cursor {}) ;; empty map
     (swap! test-cursor assoc :z 3)
     (is (= @test-cursor {:z 3}))
     (is (= (get-in @test-atom [:a :b :c :d])
+           {:z 3}))
+
+    (reset! test-cursor2 {}) ;; empty map
+    (swap! test-cursor2 assoc :z 3)
+    (is (= @test-cursor2 {:z 3}))
+    (is (= (get-in @test-atom [])
            {:z 3}))))
 
 
