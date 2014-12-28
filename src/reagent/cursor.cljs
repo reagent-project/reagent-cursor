@@ -27,8 +27,8 @@
 
   IReset
   (-reset! [a new-value]
-    (-> (swap! ratom assoc-in path new-value)
-        (get-in path)))
+    (swap! ratom assoc-in path new-value)
+    new-value)
 
   ISwap
   (-swap! [a f]
