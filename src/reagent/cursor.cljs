@@ -94,8 +94,11 @@
   ... (reset! c 42) ;; equivalent to (swap! ra assoc-in [:nested :content] 42)
   ... (swap! c inc) ;; equivalence to (swap! ra update-in [:nested :content] inc)
   )"
-  ([path] (fn [ra] (cursor path ra)))
-  ([path ra] (RCursor. path ra)))
+  ([path] (fn [a] (cursor path a)))
+  ([path a]
+   (if (seq path)
+     (RCursor. path a)
+     a)))
 
 
 (defn cur
@@ -103,4 +106,4 @@
 
   Behaves like a normal atom for the value at the specified path."
   [a path]
-  (RCursor. path a))
+  (cursor path a))
