@@ -106,4 +106,4 @@
 
   Behaves like a normal atom for the value at the specified path."
   [a path]
-  (cursor path ))
+  (cursor path a))
