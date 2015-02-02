@@ -1,3 +1,10 @@
+Deprecated
+==============
+
+As part of the migration to the new **reagent-project** organization, an earlier version of this **cursors** library was folded into Reagent's core. As part of the Reagent 0.5.0 release, that implementation of cursors has been substantially enhanced (both in performance and in generalization) so this standalone cursor library should be considered **deprecated**.
+
+Note that the argument order in Reagent core is different - atom first, path second - so switching from this library to Reagent core will involve code changes but they are straightforward.
+
 Cursors
 ==============
 
